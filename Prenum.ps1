@@ -77,7 +77,9 @@ Action: Triage Kerberos Tickets (Current User)
  | 0x6cf06 | ws-berban$ @ WINDCORP.HTB | ldap/Menhit.windcorp.htb              | 12.05.2023 00:49:18 |
  | 0x6cf06 | ws-berban$ @ WINDCORP.HTB | ldap/Menhit.windcorp.htb/windcorp.htb | 12.05.2023 00:49:18 |
  ----------------------------------------------------------------------------------------------------- 
-
+.NOTES  
+    File Name  : prenum.ps1  
+    Author     : Andreas Finstad (4ndr34z)  
   
 #>
 
