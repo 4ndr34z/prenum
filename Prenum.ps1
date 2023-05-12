@@ -178,7 +178,7 @@ Function Test-Computers {
 
 Function Test-Users {
     set-content "" -Path .\users.txt -Force
-    $searcher.Filter = '(&(objectClass=user)(samaccountname=*))'
+    $searcher.Filter = '(&(objectClass=user)(samaccountname=*)(!(objectClass=computer)))'
     $results = $searcher.FindAll()
 
     $users = @()
