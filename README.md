@@ -30,7 +30,7 @@ Prenum is still in early development...
 
 ## Functions
 - Full AMSI-Bypass
-- Reflectively loading Rubeus and Certify
+- Reflectively loading [Rubeus](https://github.com/GhostPack/Rubeus) and [Certify](https://github.com/GhostPack/Certify)
 - Enumerate and test all computers in AD; check if their password is the same as the computername
 - Enumerate all users in AD; check if the password is blank
 - Passwordspray all users in AD
