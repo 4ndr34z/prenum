@@ -142,7 +142,14 @@ Function Load-Certify (){
 }
 
 Function Test-Computers {
-    set-content "" -Path .\computers.txt -Force
+    
+      if (Test-Path ".\computers.txt") {
+        Remove-Item ".\computers.txt"
+      }
+
+      if (Test-Path ".\pwnedcomputers.txt") {
+        Remove-Item ".\pwnedcomputers.txt"
+      }
     write-host
     write-host Testing Computers  -ForegroundColor Yellow
     $searcher.Filter = '(&(objectClass=computer)(samaccountname=*))'
@@ -179,7 +186,14 @@ Function Test-Computers {
 
 
 Function Test-Users {
-    set-content "" -Path .\users.txt -Force
+    
+    if (Test-Path ".\users.txt") {
+      Remove-Item ".\users.txt"
+    }
+
+    if (Test-Path ".\pwnedusers.txt") {
+      Remove-Item ".\pwnedusers.txt"
+    }
     $searcher.Filter = '(&(objectClass=user)(samaccountname=*)(!(objectClass=computer)))'
     $results = $searcher.FindAll()
 
