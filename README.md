@@ -15,6 +15,8 @@ It can search for computer account with password the same as computername or no 
 This could be the situation if some computer-accounts are pre-created with the box "Assign this computer account as a pre-Windows 2000 computer"
 are ticked, or computer-accounts are created with other tools.
 
+Prenum is still in early development...
+
 
 ## Functions
 - Full AMSI-Bypass
