@@ -119,6 +119,11 @@ Function Test-ADAuthentication {
     (New-Object DirectoryServices.DirectoryEntry "",$Domain\$username,$password).psbase.name -ne $null
 }
 
+$logo = 'X19fX19fX19fXyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgClxfX19fX18gICBcX19fX19fXyAgIF9fX18gICBfX19fICBfXyBfXyAgX19fX18gIAogfCAgICAgX19fL1xfICBfXyBcXy8gX18gXCAvICAgIFx8ICB8ICBcLyAgICAgXCAKIHwgICAgfCAgICAgfCAgfCBcL1wgIF9fXy98ICAgfCAgXCAgfCAgLyAgWSBZICBcCiB8X19fX3wgICAgIHxfX3wgICAgXF9fXyAgPl9fX3wgIC9fX19fL3xfX3xffCAgLwogICAgICAgICAgICAgICAgICAgICAgICBcLyAgICAgXC8gICAgICAgICAgICBcLyAK'
+$logo = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($logo))
+write-host $logo -ForegroundColor yellow
+Write-Host "                                      by 4ndr34z" -ForegroundColor yellow
+
 Function Load-Rubeus (){
   Param(
   [Parameter(Position = 0)]
