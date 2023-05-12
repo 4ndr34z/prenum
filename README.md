@@ -1,5 +1,5 @@
 # prenum
-![Main](https://github.com/4ndr34z/prenum/blob/main/images/pic1.png?raw=true)
+![Main](https://github.com/4ndr34z/prenum/blob/main/images/pic.png?raw=true)
 ## The perils of the Pre-Windows 2000 compatible access group in a Windows Domain.
 <p>On Windows 2000 and probably 2003/2008 too (not verified), that group contained groups: Anonymous/Everyone/Authenticated Users
 Even if you have upgraded your Domain Controllers to Windows 2022, that group is kept unchanged.</p>
