@@ -13,7 +13,8 @@ Prenum is a script exploiting this, by requesting information that might be usef
 It can search for computer account with password the same as computername or no password at all. 
 
 This could be the situation if some computer-accounts are pre-created with the box ```Assign this computer account as a pre-Windows 2000 computer``` are ticked, or computer-accounts are created with other tools.
-![Main](https://github.com/4ndr34z/prenum/blob/main/images/precomp.png| width=100)
+
+<img src="https://github.com/4ndr34z/prenum/blob/main/images/precomp.png" height="280">
 
 Some automation-tools also create users, leaving the ```Password-Not-Required``` attribute enabled. This means that users **may** set a blank password and **are allowed to do so**, regardless of what kind of password policy is in place. You can and should test for this in your Active Directory: 
 
