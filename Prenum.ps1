@@ -177,6 +177,7 @@ Function Test-Computers {
 
 
 Function Test-Users {
+    set-content "" -Path .\users.txt -Force
     $searcher.Filter = '(&(objectClass=user)(samaccountname=*))'
     $results = $searcher.FindAll()
 
@@ -189,7 +190,8 @@ Function Test-Users {
     write-host
     write-host Testing users -ForegroundColor Yellow
     $users | foreach-object -Process {
-   
+    write-host $_
+    Add-Content -Path .\users.txt -Value $_
     $valid = Test-ADAuthentication -username $_ -password ""
 
       if ($valid) {
