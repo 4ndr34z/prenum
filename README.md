@@ -12,8 +12,17 @@ So if you have user credentials, you can still query all that information.
 Prenum is a script exploiting this, by requesting information that might be useful for an attacker.
 It can search for computer account with password the same as computername or no password at all. 
 
-This could be the situation if some computer-accounts are pre-created with the box "Assign this computer account as a pre-Windows 2000 computer"
-are ticked, or computer-accounts are created with other tools.
+This could be the situation if some computer-accounts are pre-created with the box ```Assign this computer account as a pre-Windows 2000 computer``` are ticked, or computer-accounts are created with other tools.
+![Main](https://github.com/4ndr34z/prenum/blob/main/images/precomp.png =250x250)
+
+Some automation-tools also create users, leaving the ```Password-Not-Required``` attribute enabled. This means that users **may** set a blank password and **are allowed to do so**, regardless of what kind of password policy is in place. You can and should test for this in your Active Directory: 
+
+    Get-ADUser -Filter {PasswordNotRequired -eq $true}
+And fix it:
+
+    Get-ADUser -Identity username | Set-ADUser -PasswordNotRequired $false
+
+All of this should be checked in an old Active Directory.
 
 Prenum is still in early development...
 
@@ -33,20 +42,20 @@ Prenum is still in early development...
 ## Usage
 ### Enumerate and test users, computers and passwordspraying
 
-        .\Prenum.ps1' -DC menhit -Domain windcorp.htb -Users -Computers -Spraypass 'WelcomeToWindcorp#2023'
+    .\Prenum.ps1' -DC menhit -Domain windcorp.htb -Users -Computers -Spraypass 'WelcomeToWindcorp#2023'
 ### Enumerate computers and request Kerberos TGT if vulnerable computer-accounts are found
 
-        .\Prenum.ps1' -DC menhit -Domain windcorp.htb -Computers -Asktgt
+    .\Prenum.ps1' -DC menhit -Domain windcorp.htb -Computers -Asktgt
 
 ### Running Rubeus
 
-        .\Prenum.ps1 -DC menhit -Domain windcorp.htb -Rubeus "triage"
+    .\Prenum.ps1 -DC menhit -Domain windcorp.htb -Rubeus "triage"
 
 ### Running Certify
 
-        .\Prenum.ps1 -Certify "cas /domain:windcorp.htb"
+    .\Prenum.ps1 -Certify "cas /domain:windcorp.htb"
 
 ### LDAP-search for Domain-controllers
 
-        .\Prenum.ps1 -DC menhit -Domain windcorp.htb -ldap "(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))"
+    .\Prenum.ps1 -DC menhit -Domain windcorp.htb -ldap "(&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))"
 
