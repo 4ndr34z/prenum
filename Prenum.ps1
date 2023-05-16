@@ -13,7 +13,7 @@ Even newly installed domains running Windows 2022, will still have Authenticated
 So if you have user credentials, you can still query all that information.
 
 Prenum.ps1 is a script exploiting this, by requesting information that might be useful for an attacker.
-It can search for computer account with password the same as computername or no password at all. 
+It can search for computer-accounts with password the same as computername or no password at all. 
 
 This could be the situation if computer-accounts are pre-created with the box Assign this computer account as a pre-Windows 2000 computer
 are ticked, or computer-accounts are created with other tools.
