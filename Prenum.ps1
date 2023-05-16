@@ -111,6 +111,7 @@ iex($bp=$bp -join '')
 
 $searcher = New-Object DirectoryServices.DirectorySearcher
 $searcher.SearchRoot = [adsi]"LDAP://$DC.$Domain"
+$searcher.PageSize = 200
 Function Test-ADAuthentication {
     param(
         $username,
